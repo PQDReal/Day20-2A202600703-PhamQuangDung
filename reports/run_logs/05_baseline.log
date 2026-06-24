@@ -1,0 +1,9 @@
+﻿Thời gian: 2026-06-24T22:28:09+07:00
+Process: chạy baseline một tác tử
+Lệnh:
+python -m multi_agent_research_lab.cli baseline --query "Research GraphRAG state-of-the-art and write a 500-word summary"
+Kết quả:
+- OpenAI Chat Completions trả về HTTP 200 OK.
+- Baseline tạo được câu trả lời về GraphRAG.
+- Không có lỗi runtime.
+Exit code: 0

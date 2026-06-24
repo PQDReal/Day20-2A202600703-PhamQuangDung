@@ -1,0 +1,8 @@
+﻿Thời gian: 2026-06-24T22:27:47+07:00
+Process: kiểm tra cấu hình API key
+Kết quả:
+- Đã phát hiện OpenAI key trong môi trường local mà không in secret ra log.
+- .env được tạo để app load key khi chạy.
+- .env đã nằm trong .gitignore, không được commit.
+- .env.example đã được đưa về placeholder an toàn.
+Exit code: 0

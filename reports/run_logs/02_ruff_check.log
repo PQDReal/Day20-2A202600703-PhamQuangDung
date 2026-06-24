@@ -1,0 +1,6 @@
+﻿Thời gian: 2026-06-24T22:28:04+07:00
+Process: lint bằng Ruff
+Lệnh: python -m ruff check src tests
+Kết quả:
+- All checks passed.
+Exit code: 0

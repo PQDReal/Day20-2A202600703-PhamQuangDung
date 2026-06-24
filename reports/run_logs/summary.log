@@ -1,0 +1,9 @@
+﻿===== TÓM TẮT CHẠY LẠI 2026-06-24T22:29:02+07:00 =====
+00_key_check: exit 0; phát hiện key local, không in secret, .env bị ignore.
+01_settings_probe: exit 0; settings_has_openai_key=True; model=gpt-4o-mini; openai_installed=True.
+02_ruff_check: exit 0; lint pass.
+03_mypy: exit 0; typecheck pass.
+04_pytest: exit 0; 4 test pass.
+05_baseline: exit 0; OpenAI HTTP 200 OK.
+06_multi_agent: exit 0; researcher -> analyst -> writer -> done; OpenAI HTTP 200 OK.
+07_benchmark: exit 0; benchmark report đã ghi vào reports/benchmark_report.md.

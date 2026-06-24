@@ -1,0 +1,13 @@
+﻿Thời gian: 2026-06-24T22:28:23+07:00
+Process: chạy workflow đa tác tử
+Lệnh:
+python -m multi_agent_research_lab.cli multi-agent --query "Research GraphRAG state-of-the-art and write a 500-word summary"
+Kết quả:
+- OpenAI Chat Completions trả về HTTP 200 OK.
+- Route history: researcher -> analyst -> writer -> done.
+- Số iteration: 4.
+- Số nguồn thu được: 5.
+- Writer output_tokens: 600 trong lần chạy CLI trực tiếp.
+- Writer cost_usd: 0.00042705 trong lần chạy CLI trực tiếp.
+- errors: [].
+Exit code: 0

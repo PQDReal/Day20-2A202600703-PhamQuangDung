@@ -1,0 +1,11 @@
+﻿Thời gian: 2026-06-24T22:28:36+07:00
+Process: chạy benchmark và ghi báo cáo
+Lệnh:
+python -m multi_agent_research_lab.cli benchmark --query "Research GraphRAG state-of-the-art and write a 500-word summary"
+Kết quả:
+- OpenAI Chat Completions trả về HTTP 200 OK cho baseline.
+- OpenAI Chat Completions trả về HTTP 200 OK cho workflow đa tác tử.
+- Báo cáo được ghi vào reports/benchmark_report.md.
+- Baseline: latency=14.05s, quality=4.0, citation_coverage=0%, failure_rate=0%.
+- Multi-agent: latency=11.31s, quality=10.0, citation_coverage=100%, failure_rate=0%.
+Exit code: 0

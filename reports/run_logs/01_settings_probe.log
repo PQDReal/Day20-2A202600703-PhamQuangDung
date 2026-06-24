@@ -1,0 +1,8 @@
+﻿Thời gian: 2026-06-24T22:28:03+07:00
+Process: kiểm tra settings runtime
+Lệnh: python -c "from multi_agent_research_lab.core.config import get_settings; ..."
+Kết quả:
+- settings_has_openai_key=True
+- model=gpt-4o-mini
+- openai_installed=True
+Exit code: 0

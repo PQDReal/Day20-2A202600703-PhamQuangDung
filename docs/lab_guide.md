@@ -1,47 +1,45 @@
-# Lab Guide: Multi-Agent Research System
+# Hướng dẫn Lab: Hệ thống nghiên cứu đa tác tử
 
-## Scenario
+## Bối cảnh
 
 Bạn cần xây dựng một research assistant có thể nhận câu hỏi dài, tìm thông tin, phân tích và viết câu trả lời cuối cùng. Lab yêu cầu so sánh hai cách làm:
 
-1. **Single-agent baseline**: một agent làm toàn bộ.
-2. **Multi-agent workflow**: Supervisor điều phối Researcher, Analyst, Writer.
+1. **Đường cơ sở một tác tử**: một agent làm toàn bộ.
+2. **Workflow đa tác tử**: Supervisor điều phối Researcher, Analyst và Writer.
 
 ## Quy tắc quan trọng
 
 - Không thêm agent nếu không có lý do rõ ràng.
-- Mỗi agent phải có responsibility riêng.
-- Shared state phải đủ rõ để debug.
+- Mỗi agent phải có trách nhiệm riêng.
+- Trạng thái chung phải đủ rõ để debug.
 - Phải có trace hoặc log cho từng bước.
-- Phải benchmark, không chỉ nhìn output bằng cảm tính.
+- Phải benchmark, không chỉ đánh giá output bằng cảm tính.
 
-## Milestone 1: Baseline
+## Mốc 1: Baseline
 
 File gợi ý:
 
 - `src/multi_agent_research_lab/cli.py`
 - `src/multi_agent_research_lab/services/llm_client.py`
 
-TODO(student): thay baseline placeholder bằng một call LLM thật.
+Baseline đã dùng `LLMClient.complete`. Khi có `OPENAI_API_KEY`, client gọi OpenAI; khi không có key, client dùng tổng hợp offline để vẫn chạy được kiểm tra nhanh và benchmark.
 
-## Milestone 2: Supervisor
+## Mốc 2: Supervisor
 
 File gợi ý:
 
 - `src/multi_agent_research_lab/agents/supervisor.py`
 - `src/multi_agent_research_lab/graph/workflow.py`
 
-TODO(student): implement routing policy.
+Supervisor routing policy đã triển khai:
 
-Gợi ý câu hỏi thiết kế:
+- Gọi Researcher khi chưa có `research_notes`.
+- Gọi Analyst khi đã có research nhưng chưa có `analysis_notes`.
+- Gọi Writer khi research và analysis đã sẵn sàng.
+- Dừng khi có `final_answer` hoặc chạm `max_iterations`.
+- Nếu worker fail, workflow ghi vào `state.errors`; Writer có câu trả lời dự phòng.
 
-- Khi nào gọi Researcher?
-- Khi nào gọi Analyst?
-- Khi nào gọi Writer?
-- Khi nào stop?
-- Nếu agent fail thì retry hay fallback?
-
-## Milestone 3: Worker agents
+## Mốc 3: Worker agents
 
 File gợi ý:
 
@@ -49,9 +47,13 @@ File gợi ý:
 - `agents/analyst.py`
 - `agents/writer.py`
 
-TODO(student): implement từng worker.
+Các worker agent đã triển khai:
 
-## Milestone 4: Trace và benchmark
+- Researcher: tìm trong local corpus, khử trùng lặp source, ghi research notes có số thứ tự.
+- Analyst: rút claim, evidence, weak evidence và đề xuất cấu trúc trả lời.
+- Writer: tổng hợp final answer có citation reference và metadata token/cost.
+
+## Mốc 4: Trace và benchmark
 
 File gợi ý:
 
@@ -63,13 +65,13 @@ Benchmark tối thiểu:
 
 | Metric | Cách đo gợi ý |
 |---|---|
-| Latency | wall-clock time |
-| Cost | token usage hoặc provider usage |
-| Quality | rubric 0-10 do peer review |
-| Citation coverage | số claims có source / tổng claims chính |
-| Failure rate | số query fail / tổng query |
+| Latency | Wall-clock time |
+| Cost | Token usage hoặc provider usage |
+| Quality | Rubric 0-10 do peer review |
+| Citation coverage | Số claim có source / tổng claim chính |
+| Failure rate | Số query lỗi / tổng số query |
 
-## Exit ticket
+## Câu hỏi kết thúc
 
 Mỗi nhóm trả lời 2 câu:
 

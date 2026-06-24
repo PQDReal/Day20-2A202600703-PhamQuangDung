@@ -1,20 +1,20 @@
-# Lab 20: Multi-Agent Research System Starter
+# Lab 20: Hệ thống nghiên cứu đa tác tử
 
-Starter repo cho bài lab **Multi-Agent Systems**: xây dựng hệ thống nghiên cứu gồm **Supervisor + Researcher + Analyst + Writer** và benchmark với single-agent baseline.
+Repo bài lab **Multi-Agent Systems**: xây dựng hệ thống trợ lý nghiên cứu gồm **Supervisor + Researcher + Analyst + Writer** và benchmark với đường cơ sở một tác tử.
 
-> Mục tiêu của repo này là cung cấp **production-grade skeleton** để học viên phát triển code cá nhân. Các phần logic quan trọng được để ở dạng `TODO` để học viên tự triển khai.
+Repo đã triển khai luồng chạy đầy đủ, có cơ chế dự phòng offline để kiểm tra nhanh không cần API key, và vẫn hỗ trợ OpenAI khi cấu hình `OPENAI_API_KEY`.
 
-## Learning outcomes
+## Mục tiêu học tập
 
-Sau 2 giờ lab, học viên cần có thể:
+Sau bài lab, học viên cần có thể:
 
-1. Thiết kế role rõ ràng cho nhiều agent.
-2. Xây dựng shared state đủ thông tin cho handoff.
-3. Thêm guardrail tối thiểu: max iterations, timeout, retry/fallback, validation.
-4. Trace được luồng chạy và giải thích agent nào làm gì.
-5. Benchmark single-agent vs multi-agent theo quality, latency, cost.
+1. Thiết kế vai trò rõ ràng cho nhiều tác tử.
+2. Xây dựng trạng thái chung đủ thông tin cho quá trình bàn giao.
+3. Thêm guardrail tối thiểu: giới hạn vòng lặp, timeout, retry/dự phòng và validation.
+4. Ghi trace được luồng chạy và giải thích tác tử nào làm gì.
+5. Benchmark một tác tử và đa tác tử theo chất lượng, độ trễ và chi phí.
 
-## Architecture mục tiêu
+## Kiến trúc mục tiêu
 
 ```text
 User Query
@@ -26,7 +26,7 @@ Supervisor / Router
    |------> Writer Agent      -> final_answer
    |
    v
-Trace + Benchmark Report
+Trace + Báo cáo benchmark
 ```
 
 ## Cấu trúc repo
@@ -34,120 +34,121 @@ Trace + Benchmark Report
 ```text
 .
 ├── src/multi_agent_research_lab/
-│   ├── agents/              # Agent interfaces + skeletons
-│   ├── core/                # Config, state, schemas, errors
-│   ├── graph/               # LangGraph workflow skeleton
-│   ├── services/            # LLM, search, storage clients
-│   ├── evaluation/          # Benchmark/evaluation skeleton
-│   ├── observability/       # Logging/tracing hooks
+│   ├── agents/              # Giao diện và implementation của các agent
+│   ├── core/                # Config, state, schema, lỗi miền ứng dụng
+│   ├── graph/               # Workflow do Supervisor điều phối
+│   ├── services/            # LLM, search, storage client
+│   ├── evaluation/          # Benchmark và render báo cáo
+│   ├── observability/       # Logging và tracing hook
 │   └── cli.py               # CLI entrypoint
-├── configs/                 # YAML configs for lab variants
-├── docs/                    # Lab guide, rubric, design notes
-├── tests/                   # Unit tests for skeleton behavior
-├── notebooks/               # Optional notebook entrypoint
-├── scripts/                 # Helper scripts
-├── .env.example             # Environment variables template
-├── pyproject.toml           # Python project config
-├── Dockerfile               # Containerized dev/runtime
-└── Makefile                 # Common commands
+├── configs/                 # Cấu hình YAML cho bài lab
+├── docs/                    # Hướng dẫn lab, rubric, ghi chú thiết kế
+├── tests/                   # Unit test
+├── notebooks/               # Notebook entrypoint tùy chọn
+├── scripts/                 # Script hỗ trợ
+├── .env.example             # Mẫu biến môi trường, không chứa secret thật
+├── pyproject.toml           # Cấu hình Python project
+├── Dockerfile               # Runtime/dev bằng container
+└── Makefile                 # Các lệnh thường dùng
 ```
 
-## Quickstart
+## Khởi động nhanh
 
 ### 1. Tạo môi trường
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -e "[dev]"
 cp .env.example .env
 ```
 
-### 2. Cấu hình API keys
+### 2. Cấu hình API key
 
-Mở `.env` và điền key cần thiết.
+Mở `.env` và điền key cần thiết. Không commit `.env` lên GitHub.
 
 ```bash
 OPENAI_API_KEY=...
-# optional
+# tùy chọn
 LANGSMITH_API_KEY=...
 TAVILY_API_KEY=...
 ```
 
-### 3. Chạy smoke test
+### 3. Chạy kiểm tra nhanh
 
 ```bash
 make test
 python -m multi_agent_research_lab.cli --help
 ```
 
-### 4. Chạy baseline skeleton
+### 4. Chạy baseline một tác tử
 
 ```bash
 python -m multi_agent_research_lab.cli baseline \
   --query "Research GraphRAG state-of-the-art and write a 500-word summary"
 ```
 
-Lệnh này chỉ chạy khung baseline tối giản. Học viên cần tự triển khai logic LLM thực tế trong `src/multi_agent_research_lab/services/llm_client.py`.
+Lệnh này chạy đường cơ sở một tác tử thông qua `LLMClient`. Nếu chưa có API key, client dùng dự phòng offline và vẫn ghi metadata token/cost.
 
-### 5. Chạy multi-agent skeleton
+### 5. Chạy workflow đa tác tử
 
 ```bash
 python -m multi_agent_research_lab.cli multi-agent \
   --query "Research GraphRAG state-of-the-art and write a 500-word summary"
 ```
 
-Mặc định lệnh sẽ báo các `TODO` cần làm. Đây là chủ đích của starter repo.
+Lệnh này chạy luồng `Supervisor -> Researcher -> Analyst -> Writer -> done` và in toàn bộ trạng thái chung kèm trace.
 
-## Milestones trong 2 giờ lab
+### 6. Tạo báo cáo benchmark
 
-| Thời lượng | Milestone | File gợi ý |
+```bash
+python -m multi_agent_research_lab.cli benchmark \
+  --query "Research GraphRAG state-of-the-art and write a 500-word summary"
+```
+
+Kết quả được ghi vào `reports/benchmark_report.md`, gồm độ trễ, chi phí ước tính, quality proxy, độ phủ citation, tỉ lệ lỗi và phần giải thích trace.
+
+## Các mốc triển khai
+
+| Thời lượng | Mốc | File gợi ý |
 |---:|---|---|
-| 0-15' | Setup, chạy baseline skeleton | `cli.py`, `services/llm_client.py` |
-| 15-45' | Build Supervisor / router | `agents/supervisor.py`, `graph/workflow.py` |
+| 0-15' | Setup, chạy baseline | `cli.py`, `services/llm_client.py` |
+| 15-45' | Xây Supervisor/router | `agents/supervisor.py`, `graph/workflow.py` |
 | 45-75' | Thêm Researcher, Analyst, Writer | `agents/*.py`, `core/state.py` |
 | 75-95' | Trace + benchmark single vs multi | `observability/tracing.py`, `evaluation/benchmark.py` |
 | 95-115' | Peer review theo rubric | `docs/peer_review_rubric.md` |
-| 115-120' | Exit ticket | `docs/lab_guide.md` |
+| 115-120' | Câu hỏi kết thúc | `docs/lab_guide.md` |
 
 ## Quy ước production trong repo
 
 - Tách rõ `agents`, `services`, `core`, `graph`, `evaluation`, `observability`.
 - Không hard-code API key trong code.
-- Tất cả input/output chính dùng Pydantic schema.
-- Có type hints, linting, formatting, unit test tối thiểu.
+- Input/output chính dùng Pydantic schema.
+- Có type hints, linting, formatting và unit test tối thiểu.
 - Có logging/tracing hook ngay từ đầu.
 - Không để agent chạy vô hạn: dùng `max_iterations`, `timeout_seconds`.
 - Có benchmark report thay vì chỉ demo output đẹp.
 
-## TODO chính cho học viên
+## Phần đã hoàn thành
 
-Tìm trong code các marker:
+1. `LLMClient` hỗ trợ OpenAI và dự phòng offline.
+2. `SearchClient` có local mock corpus để chạy ổn định.
+3. Supervisor routing policy chọn lần lượt `researcher`, `analyst`, `writer`, `done`.
+4. Researcher, Analyst, Writer và Critic tùy chọn đã cập nhật shared state.
+5. Workflow có điều kiện dừng, giới hạn vòng lặp và câu trả lời dự phòng.
+6. Trace JSON ghi từng bước trong `state.trace`.
+7. Báo cáo benchmark có metric cụ thể và giải thích trace.
 
-```bash
-grep -R "TODO(student)" -n src tests docs
-```
-
-Các phần học viên cần tự làm:
-
-1. Implement LLM client.
-2. Implement web/search client hoặc mock search source.
-3. Implement routing decision trong Supervisor.
-4. Implement từng worker agent.
-5. Build LangGraph workflow.
-6. Thêm tracing provider thật: LangSmith, Langfuse hoặc OpenTelemetry.
-7. Viết benchmark report.
-
-## Deliverables
+## Sản phẩm nộp
 
 Học viên nộp:
 
 1. GitHub repo cá nhân.
 2. Screenshot trace hoặc link trace.
-3. `reports/benchmark_report.md` so sánh single vs multi-agent.
-4. Một đoạn giải thích failure mode và cách fix.
+3. `reports/benchmark_report.md` so sánh một tác tử và đa tác tử.
+4. Một đoạn giải thích chế độ lỗi và cách khắc phục.
 
-## References
+## Tài liệu tham khảo
 
 - Anthropic: Building effective agents — https://www.anthropic.com/engineering/building-effective-agents
 - OpenAI Agents SDK orchestration/handoffs — https://developers.openai.com/api/docs/guides/agents/orchestration
